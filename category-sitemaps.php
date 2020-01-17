@@ -2,17 +2,16 @@
 /**
  * Plugin Name:     Category Sitemaps
  * Plugin URI:      www.3ele.de
- * Description:     PLUGIN DESCRIPTION HERE
+ * Description:     Create a Sitemap per Category
  * Author:          Sebastian Weiss
  * Author URI:      www.3ele.de
  * Text Domain:     category-sitemaps
  * Domain Path:     /languages
- * Version:         0.1.0
+ * Version:         1.1.0
  *
  * @package         Category_Sitemaps
  */
 
-// test commit
 // create XML files in root
 defined( 'ABSPATH' ) or die( 'Are you ok?' );
 
@@ -90,12 +89,13 @@ class XMLSitemapCreator {
             'exclude' => 1,
         )  );
 
-        $sitemap = '<?xml version="1.0" encoding="UTF-8"?>';
-        $sitemap .= "/n".'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+
         
         foreach ($categories as $category) {
+        	$sitemap = '<?xml version="1.0" encoding="UTF-8"?>';
+        	$sitemap .= "\n".'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
             $update_time = date("Y-m-d");
-            $sitemap .= "\t" . '<url>' . "\n" .
+            $sitemap .= "\n \t" . '<url>' . "\n" .
             "\t\t" . '<loc>/' . get_category_link($category) . '</loc>' .
             "\n\t\t" . '<lastmod>' . $update_time . '</lastmod>' .
             "\n\t" . '</url>' . "\n";
@@ -144,7 +144,7 @@ class XMLSitemapCreator {
         $this->create_news_sitemap($news_posts);
         /* create_image_sitemap */
         /* create_master_sitemap */
-        $this->create_master_sitemap($sitemaps);   
+        $this->create_master_sitemap();   
     }
 
 
@@ -167,7 +167,7 @@ class XMLSitemapCreator {
     public function create_image_sitemap($posts) {
 
 
-        $filename = 'image';
+        $filename = 'Image';
         $publication_name = get_bloginfo('name');
         $publication_language = get_bloginfo('language');
 		$xml_sitemap_images  = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
@@ -193,22 +193,23 @@ class XMLSitemapCreator {
     }
 
     public function create_master_sitemap(){
+	$url = get_bloginfo('url');  
         $files = glob('*sitemap.xml');
         $update_time = date('Y-m-d');
-        $filename = "master";
+        $filename = "Master";
         $master_sitemap = '<?xml version="1.0" encoding="UTF-8"?>';
-        $master_sitemap .= "\n ".'<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9" xmlns:n="https://www.google.com/schemas/sitemap-news/0.9">';
-        $master_sitemap .= "\n \t".'<sitemapindex>';
+        $master_sitemap .= "\n ".'<sitemapindex xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">';
+      //  $master_sitemap .= "\n \t".'<sitemapindex>';
         foreach($files as $sitemap):
-            if($sitemap !='master-sitemap.xml'): 
-                $master_sitemap .="\n \t \t".'<sitemap>';
-                $master_sitemap .="\n \t \t \t".'<loc>'.$sitemap.'</loc>';
-                $master_sitemap .="\n \t \t \t".'<lastmod>'.$update_time.'</lastmod>';
-                $master_sitemap .="\n \t \t".'</sitemap>';  
+            if($sitemap !='Master-sitemap.xml'): 
+                $master_sitemap .="\n \t ".'<sitemap>';
+                $master_sitemap .="\n \t  \t".'<loc>'.$url.'/'.$sitemap.'</loc>';
+                $master_sitemap .="\n \t  \t".'<lastmod>'.$update_time.'</lastmod>';
+                $master_sitemap .="\n  \t".'</sitemap>';  
             endif;    
         endforeach;   
         $master_sitemap.= "\n \t".'</sitemapindex>';
-        $master_sitemap.= "\n".'</urlset>';
+     //   $master_sitemap.= "\n".'</urlset>';
         
         $sitemap = $this->cts_create_file($filename,$master_sitemap);
     }
