@@ -12,6 +12,7 @@
  * @package         Category_Sitemaps
  */
 
+// test commit
 // create XML files in root
 defined( 'ABSPATH' ) or die( 'Are you ok?' );
 
