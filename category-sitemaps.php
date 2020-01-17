@@ -96,7 +96,7 @@ class XMLSitemapCreator {
         	$sitemap .= "\n".'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
             $update_time = date("Y-m-d");
             $sitemap .= "\n \t" . '<url>' . "\n" .
-            "\t\t" . '<loc>/' . get_category_link($category) . '</loc>' .
+            "\t\t" . '<loc>' . get_category_link($category) . '</loc>' .
             "\n\t\t" . '<lastmod>' . $update_time . '</lastmod>' .
             "\n\t" . '</url>' . "\n";
             $posts_for_sitemap   = get_posts( array(
@@ -138,26 +138,25 @@ class XMLSitemapCreator {
 
         }
 
-        /* create_news_sitemap */
-        $this->create_image_sitemap($post_images);  
-
-        $this->create_news_sitemap($news_posts);
         /* create_image_sitemap */
+        $this->create_image_sitemap($post_images);  
+	/* create_news_sitemap */
+        $this->create_news_sitemap($news_posts);
         /* create_master_sitemap */
         $this->create_master_sitemap();   
     }
 
 
     public function create_news_sitemap($posts) {
-        $filename = 'news';
+        $filename = 'News';
         $publication_name = get_bloginfo('name');
         $publication_language = get_bloginfo('language');
         $xml_sitemap_google_news = '<?xml version="1.0" encoding="UTF-8"?>';
-        $xml_sitemap_google_news .= "\n".'<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9" xmlns:n="https://www.google.com/schemas/sitemap-news/0.9">';
+        $xml_sitemap_google_news .= "\n".'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">';
         foreach ($posts as $post): 
             $postdate = explode( " ", $post->post_modified );
-            $xml_sitemap_google_news .= "\n \t".'<url>'."\n \t \t".'<loc>'.$this->cts_escape_xml_entities(get_permalink($post->ID)).'</loc>'."\n \t \t".'<n:news>'."\n \t \t \t".'<n:publication>'."\n \t \t \t \t".'<n:name>'.$publication_name.'</n:name>'."\n \t \t \t \t".'<n:language>'.$publication_language.'</n:language>'."\n \t \t \t".'</n:publication>';
-            $xml_sitemap_google_news .= "\n \t \t \t".'<n:publication_date>'.$postdate[0].'</n:publication_date>'."\n \t \t \t".' <n:title>'.htmlspecialchars($post->post_title).'</n:title>'."\n \t \t ".'</n:news>'."\n \t".'</url>'."\n".'';
+            $xml_sitemap_google_news .= "\n \t".'<url>'."\n \t \t".'<loc>'.$this->cts_escape_xml_entities(get_permalink($post->ID)).'</loc>'."\n \t \t".'<news:news>'."\n \t \t \t".'<news:publication>'."\n \t \t \t \t".'<news:name>'.$publication_name.'</news:name>'."\n \t \t \t \t".'<news:language>'.$publication_language.'</news:language>'."\n \t \t \t".'</news:publication>';
+            $xml_sitemap_google_news .= "\n \t \t \t".'<news:publication_date>'.$postdate[0].'</news:publication_date>'."\n \t \t \t".' <news:title>'.htmlspecialchars($post->post_title).'</news:title>'."\n \t \t ".'</news:news>'."\n \t".'</url>'."\n".'';
         endforeach;
         $xml_sitemap_google_news .= '</urlset>';
         $sitemap = $this->cts_create_file($filename,$xml_sitemap_google_news);
@@ -183,8 +182,10 @@ class XMLSitemapCreator {
              if($attachments){
             foreach ($attachments as $attachment){
                 $xml_sitemap_images .="\n \t".'<image:image>'."\n \t \t \t \t".'<image:loc>'.$attachment->guid.'</image:loc>'."\n \t \t \t".'</image:image>';
-                $xml_sitemap_images .= "\n \t".'</url>';
+                
             }
+	//Syntax Failure, URL only when all Images from 1 Post are Done.
+	 $xml_sitemap_images .= "\n \t".'</url>';
         }
         endforeach;
         $xml_sitemap_images .= '</urlset>';
@@ -198,8 +199,7 @@ class XMLSitemapCreator {
         $update_time = date('Y-m-d');
         $filename = "Master";
         $master_sitemap = '<?xml version="1.0" encoding="UTF-8"?>';
-        $master_sitemap .= "\n ".'<sitemapindex xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">';
-      //  $master_sitemap .= "\n \t".'<sitemapindex>';
+        $master_sitemap .= "\n ".'<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
         foreach($files as $sitemap):
             if($sitemap !='Master-sitemap.xml'): 
                 $master_sitemap .="\n \t ".'<sitemap>';
@@ -209,7 +209,6 @@ class XMLSitemapCreator {
             endif;    
         endforeach;   
         $master_sitemap.= "\n \t".'</sitemapindex>';
-     //   $master_sitemap.= "\n".'</urlset>';
         
         $sitemap = $this->cts_create_file($filename,$master_sitemap);
     }
