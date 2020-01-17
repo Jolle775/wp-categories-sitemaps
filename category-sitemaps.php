@@ -4,6 +4,7 @@
  * Plugin URI:      www.3ele.de
  * Description:     PLUGIN DESCRIPTION HERE
  * Author:          Sebastian Weiss
+ 
  * Author URI:      www.3ele.de
  * Text Domain:     category-sitemaps
  * Domain Path:     /languages
@@ -70,7 +71,7 @@ class XMLSitemapCreator {
         );
     }
 
-    // check date from posts for news
+    // check date from posts for 
     public function cts_check_post_time($post, $now){
         $postDate = strtotime($post->post_date);
         
@@ -137,18 +138,19 @@ class XMLSitemapCreator {
 
         }
 
-        /* create_news_sitemap */
+     	/* create_image_sitemap */
         $this->create_image_sitemap($post_images);  
-
+	    
+ 	/* create_news_sitemap */
         $this->create_news_sitemap($news_posts);
-        /* create_image_sitemap */
+
         /* create_master_sitemap */
         $this->create_master_sitemap($sitemaps);   
     }
 
 
     public function create_news_sitemap($posts) {
-        $filename = 'news';
+        $filename = 'News';
         $publication_name = get_bloginfo('name');
         $publication_language = get_bloginfo('language');
         $xml_sitemap_google_news = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -166,7 +168,7 @@ class XMLSitemapCreator {
     public function create_image_sitemap($posts) {
 
 
-        $filename = 'image';
+        $filename = 'Image';
         $publication_name = get_bloginfo('name');
         $publication_language = get_bloginfo('language');
 		$xml_sitemap_images  = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
@@ -194,7 +196,7 @@ class XMLSitemapCreator {
     public function create_master_sitemap(){
         $files = glob('*sitemap.xml');
         $update_time = date('Y-m-d');
-        $filename = "master";
+        $filename = "Master";
         $master_sitemap = '<?xml version="1.0" encoding="UTF-8"?>';
         $master_sitemap .= "\n ".'<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9" xmlns:n="https://www.google.com/schemas/sitemap-news/0.9">';
         $master_sitemap .= "\n \t".'<sitemapindex>';
