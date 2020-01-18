@@ -95,19 +95,24 @@ class XMLSitemapCreator {
         	$sitemap = '<?xml version="1.0" encoding="UTF-8"?>';
         	$sitemap .= "\n".'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
             $update_time = date("Y-m-d");
-            $sitemap .= "\n \t" . '<url>' . "\n" .
-            "\t\t" . '<loc>' . get_category_link($category) . '</loc>' .
-            "\n\t\t" . '<lastmod>' . $update_time . '</lastmod>' .
-            "\n\t" . '</url>' . "\n";
-            $posts_for_sitemap   = get_posts( array(
+       	$args = array(
                 'numberposts' => -1,
                 'orderby' => 'modified',
                 'order' => 'DESC',
-                'category' => $category->ID,
+                'category' => $category->cat_ID,
+                'category_name' => $category->name,
                 'post_status' => 'publish',    
                 'post_type' => array( 'post' )
-            ));
+            );
+		    $sitemap .= "\n \t" . '<url>' . "\n" .
+        	    "\t\t" . '<loc>' . get_category_link($category) . '</loc>' .
+        	    "\n\t\t" . '<lastmod>' . $update_time . '</lastmod>' .
+        	    "\n\t" . '</url>' . "\n";
+       	 	    $posts_for_sitemap   = get_posts($args);
+			
+		
             foreach($posts_for_sitemap as $post ) {
+		    
                 setup_postdata ( $post );
                 $postdate = explode( " ", $post->post_modified );
                 $sitemap .= "\t" . '<url>' . "\n" .
@@ -181,14 +186,22 @@ class XMLSitemapCreator {
             $attachments = get_posts($args);
              if($attachments){
             foreach ($attachments as $attachment){
-                $xml_sitemap_images .="\n \t".'<image:image>'."\n \t \t \t \t".'<image:loc>'.$attachment->guid.'</image:loc>'."\n \t \t \t".'</image:image>';
-                
-            }
+                $xml_sitemap_images .="\n \t \t".'<image:image>';
+                $xml_sitemap_images .= "\n \t \t \t".'<image:loc>'.$attachment->guid.'</image:loc>';
+                if($attachment->post_title):
+                    $xml_sitemap_images .= "\n \t \t \t".'<image:title>'.htmlspecialchars($attachment->post_title).'</image:title>';             
+                endif;
+                if($attachment->post_content):
+                $xml_sitemap_images .="\n \t \t \t".'<image:caption>'.$attachment->post_content.'</image:caption>';
+                endif;
+                $xml_sitemap_images .="\n \t \t".'</image:image>';
+       
 	//Syntax Failure, URL only when all Images from 1 Post are Done.
 	 $xml_sitemap_images .= "\n \t".'</url>';
+		}
         }
         endforeach;
-        $xml_sitemap_images .= '</urlset>';
+        $xml_sitemap_images .= "\n".'</urlset>';
         $sitemap = $this->cts_create_file($filename,$xml_sitemap_images);
         return $sitemap;
     }
